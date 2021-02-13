@@ -1,6 +1,5 @@
 const Role = require('./lib/object/Role');
 const inquirer = require('inquirer');
-const questions = require('./lib/inquirer/questions');
 const generateMarkdown = require('./lib/generateMarkdown');
 
 const promptManagerDetails = (manager, propertyList) => {
