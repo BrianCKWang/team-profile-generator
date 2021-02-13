@@ -3,29 +3,79 @@ const inquirer = require('inquirer');
 const questions = require('./lib/inquirer/questions');
 const generateMarkdown = require('./lib/generateMarkdown');
 
-const promptManagerDetails = () => {
-  return inquirer.prompt(questions.managerQuestions)
-                .then( managerDetail => {
-                  let employeeList = {};
-                  employeeList.manager = [];
-                  employeeList.manager.push(managerDetail);
-                  return employeeList;
-                });
+const promptManagerDetails = (manager, propertyList) => {
+  
+  console.log("");
+  console.log("Please enter manager details: ");
+  return promptFor(manager, propertyList)
+        .then( managerDetail => {
+          let employeeList = {};
+          employeeList.manager = [];
+          employeeList.manager.push(managerDetail);
+          return employeeList;
+        })
+        .catch(err => {
+          console.log(err);
+        });
 }
 
 const promptEmployeeTypeOrFinish = () => {
-  return inquirer.prompt(questions.employeeTypeQuestions);
+  console.log("");
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'type',
+      message: "Choose a type of employee to add",
+      choices: ['Engineer', 'Intern', 'Finish'],
+      default: 'Finish'
+    }
+  ]);
+};
+
+const promptFor = (employeeType, propertyList) => {
+  return promptDetails(employeeType, propertyList)
+  .then(employeeType =>{
+    return Promise.resolve(employeeType);
+  })
+  .catch(err => {
+    console.log(err);
+  });
 }
 
-const promptEngineerDetails = () => {
-  return inquirer.prompt(questions.engineerQuestions);
-}
+const promptDetails = (employeeType, propertyList) => {
+  
+  if(propertyList.length > 0){
+    const propertyName = propertyList.shift();
 
-const promptInternDetails = () => {
-  return inquirer.prompt(questions.internQuestions);
-}
+    return inquirer.prompt([
+      {
+        type: 'input',
+        name: propertyName,
+        message: "Please enter " + propertyName + ": ",
+        validate: input => {
+          if(input){
+            return true;
+          }
+          else{
+            console.log("Please enter " + propertyName + "!");
+            return false;
+          }
+        }
+      }
+    ])
+    .then(ans => {
+      employeeType[propertyName] = ans[propertyName];
+
+      return promptDetails(employeeType, propertyList);
+    })
+  }
+  else{
+    return Promise.resolve(employeeType);
+  }
+};
 
 const promptEmployeeDetails = EmployeeList => {
+  let propertyList;
   if(!EmployeeList.engineerList){
     EmployeeList.engineerList = [];
   }
@@ -38,7 +88,11 @@ const promptEmployeeDetails = EmployeeList => {
     .then( choice => {
       switch(choice.type){
         case 'Engineer':
-          return promptEngineerDetails()
+          let engineer = new Role.Engineer();
+          propertyList = Object.keys(engineer);
+          console.log("");
+          console.log("Please enter engineer details: ");
+          return promptFor(engineer, propertyList)
                 .then(employee => {
                   EmployeeList.engineerList.push(employee);
                   return EmployeeList;
@@ -50,7 +104,11 @@ const promptEmployeeDetails = EmployeeList => {
                   console.log(err);
                 });
         case 'Intern':
-          return promptInternDetails()
+          let intern = new Role.Intern();
+          propertyList = Object.keys(intern);
+          console.log("");
+          console.log("Please enter intern details: ");
+          return promptFor(intern, propertyList)
                 .then(employee => {
                   EmployeeList.internList.push(employee);
                   return EmployeeList;
@@ -63,7 +121,6 @@ const promptEmployeeDetails = EmployeeList => {
                 });
         default:
           return EmployeeList;
-          break;
       }
     })
     .catch(err => {
@@ -72,7 +129,9 @@ const promptEmployeeDetails = EmployeeList => {
 }
 
 function main(){
-  promptManagerDetails()
+  let manager = new Role.Manager();
+  let propertyList = Object.keys(manager);
+  promptManagerDetails(manager, propertyList)
   .then(employeeList => {
     return promptEmployeeDetails(employeeList);
   })
