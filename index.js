@@ -4,7 +4,13 @@ const questions = require('./lib/inquirer/questions');
 const generateMarkdown = require('./lib/generateMarkdown');
 
 const promptManagerDetails = () => {
-  return inquirer.prompt(questions.managerQuestions);
+  return inquirer.prompt(questions.managerQuestions)
+                .then( managerDetail => {
+                  let employeeList = {};
+                  employeeList.manager = [];
+                  employeeList.manager.push(managerDetail);
+                  return employeeList;
+                });
 }
 
 const promptEmployeeTypeOrFinish = () => {
@@ -20,15 +26,20 @@ const promptInternDetails = () => {
 }
 
 const promptEmployeeDetails = EmployeeList => {
+  if(!EmployeeList.engineerList){
+    EmployeeList.engineerList = [];
+  }
+
+  if(!EmployeeList.internList){
+    EmployeeList.internList = [];
+  }
+
   return promptEmployeeTypeOrFinish()
     .then( choice => {
       switch(choice.type){
         case 'Engineer':
           return promptEngineerDetails()
                 .then(employee => {
-                  if(!EmployeeList.engineerList){
-                    EmployeeList.engineerList = [];
-                  }
                   EmployeeList.engineerList.push(employee);
                   return EmployeeList;
                 })
@@ -41,9 +52,6 @@ const promptEmployeeDetails = EmployeeList => {
         case 'Intern':
           return promptInternDetails()
                 .then(employee => {
-                  if(!EmployeeList.internList){
-                    EmployeeList.internList = [];
-                  }
                   EmployeeList.internList.push(employee);
                   return EmployeeList;
                 })
@@ -54,6 +62,7 @@ const promptEmployeeDetails = EmployeeList => {
                   console.log(err);
                 });
         default:
+          return EmployeeList;
           break;
       }
     })
@@ -64,21 +73,18 @@ const promptEmployeeDetails = EmployeeList => {
 
 function main(){
   promptManagerDetails()
-  .then( managerDetail => {
-    let EmployeeList = {};
-    EmployeeList.manager = [];
-    EmployeeList.manager.push(managerDetail);
-    return EmployeeList;
+  .then(employeeList => {
+    return promptEmployeeDetails(employeeList);
   })
-  .then(promptEmployeeDetails)
-  .then(portfolioData => {
+  .then(employeeList => {
     console.log("Creating html...");
-    return generateMarkdown(portfolioData);
+    return generateMarkdown(employeeList);
   })
-  // .then(markdownData => {
-  //   console.log("Saving file...");
-  //   return writeToFile('./dist/README.md', markdownData);
-  // })
+  .then(markdownData => {
+    console.log("Saving file...");
+    console.log(markdownData);
+    // return writeToFile('./dist/README.md', markdownData);
+  })
   // .then(writeFileResponse => {
   //   console.log(writeFileResponse.message);
   // })
