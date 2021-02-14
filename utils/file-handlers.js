@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-function writeToFile(fileNamePath, data) {
+function writeFile(fileNamePath, data) {
   return new Promise((resolve, reject) => {
     fs.writeFile(fileNamePath, data, err => {
       // if there's an error, reject the Promise and send the error to the Promise's `.catch()` method
@@ -13,10 +13,25 @@ function writeToFile(fileNamePath, data) {
       // if everything went well, resolve the Promise and send the successful data to the `.then()` method
       resolve({
         ok: true,
-        message: 'File created!'
+        message: 'File written successfully!'
       });
     });
   });
 }
 
-module.exports = writeToFile;
+const copyFile = (fromDir, toDir) => {
+  return new Promise((resolve, reject) => {
+    fs.copyFile(fromDir, toDir, err => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve({
+        ok: true,
+        message: 'File copied successfully!'
+      });
+    });
+  })
+}
+
+module.exports = { writeFile, copyFile };

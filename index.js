@@ -1,7 +1,7 @@
 const Role = require('./lib/object/Role');
 const inquirer = require('inquirer');
-const generateMarkdown = require('./utils/generateMarkdown');
-const writeToFile = require('./utils/file-handlers')
+const generateContent = require('./utils/generateContent');
+const { writeFile, copyFile } = require('./utils/file-handlers')
 
 const idSet = new Set();
 
@@ -148,16 +148,23 @@ function main(){
     return promptEmployeeDetails(employeeList);
   })
   .then(employeeList => {
-    console.log("Creating html...");
-    return generateMarkdown(employeeList);
+    console.log("");
+    console.log("Generting content...");
+    return generateContent(employeeList);
   })
-  .then(markdownData => {
+  .then(contentData => {
     console.log("Saving file...");
-    console.log(markdownData);
-    return writeToFile('./dist/index.html', markdownData);
+    return writeFile('./dist/index.html', contentData);
   })
   .then(writeFileResponse => {
     console.log(writeFileResponse.message);
+  })
+  .then(() => {
+    console.log("Copying file...");
+    return copyFile('./src/style.css', './dist/style.css');
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse.message);
   })
   .catch(err => {
     console.log(err);
