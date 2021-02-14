@@ -1,4 +1,6 @@
-const Role = require('./lib/object/Role');
+const Manager = require('./lib/object/Manager');
+const Engineer = require('./lib/object/Engineer');
+const Intern = require('./lib/object/Intern');
 const inquirer = require('inquirer');
 const generateContent = require('./utils/generateContent');
 const { writeFile, copyFile } = require('./utils/file-handlers')
@@ -100,8 +102,10 @@ const promptEmployeeDetails = EmployeeList => {
     .then( choice => {
       switch(choice.type){
         case 'Engineer':
-          let engineer = new Role.Engineer();
-          propertyList = Object.keys(engineer);
+          let engineer = new Engineer();
+          propertyList = Object.keys(engineer).filter(word => {
+            return !word.startsWith('get');
+          });
           console.log("");
           console.log("Please enter engineer details: ");
           return promptFor(engineer, propertyList)
@@ -116,8 +120,10 @@ const promptEmployeeDetails = EmployeeList => {
                   console.log(err);
                 });
         case 'Intern':
-          let intern = new Role.Intern();
-          propertyList = Object.keys(intern);
+          let intern = new Intern();
+          propertyList = Object.keys(intern).filter(word => {
+            return !word.startsWith('get');
+          });
           console.log("");
           console.log("Please enter intern details: ");
           return promptFor(intern, propertyList)
@@ -141,13 +147,16 @@ const promptEmployeeDetails = EmployeeList => {
 }
 
 function main(){
-  let manager = new Role.Manager();
-  let propertyList = Object.keys(manager);
+  let manager = new Manager();
+  let propertyList = Object.keys(manager).filter(word => {
+    return !word.startsWith('get');
+  });
   promptManagerDetails(manager, propertyList)
   .then(employeeList => {
     return promptEmployeeDetails(employeeList);
   })
   .then(employeeList => {
+    // console.log(employeeList);
     console.log("");
     console.log("Generting content...");
     return generateContent(employeeList);

@@ -13,17 +13,21 @@ main += `    <section class="row no-gutters">
       if(i < data.length){
         dataValues = Object.values(data[i]);
       }
-      
+      console.log("===========");
+      console.log("data");
+      console.log(data[i]);
+      console.log("===========");
+
       if(i < data.length){
       main += `
       <div class="col-sm">
         <article class="card member-card text-black bg-primary mr-1 ml-1 mb-4" style="width:15rem">
           <div id="day-1" class="card-body">
-            <h4 class="card-title  text-white"><img src="" alt>${dataValues[0]}</h4>
+            <h4 class="card-title  text-white"><img src="" alt>${data[i].getName()}</h4>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item id">ID: <span>${dataValues[1]}</span></li>
-              <li class="list-group-item email"><a href="mailto:${dataValues[2]}" class="card-link">Email</a></li>
-              ${generateAdditionalField(additionalInfoClass, additionalInfo, dataValues[3])}
+              <li class="list-group-item id">ID: <span>${data[i].getID()}</span></li>
+              <li class="list-group-item email"><a href="mailto:${data[i].getEmail()}" class="card-link">Email</a></li>
+              ${generateAdditionalField(additionalInfoClass, additionalInfo, data[i])}
             </ul>
           </div>
         </article>
@@ -40,15 +44,15 @@ main += `    <section class="row no-gutters">
   }
 }
 
-const generateAdditionalField = (additionalInfoClass, additionalInfo, dataValues) => {
+const generateAdditionalField = (additionalInfoClass, additionalInfo, data) => {
 
   switch(additionalInfoClass){
     case 'officeNum':
-      return `<li class="list-group-item ${additionalInfoClass}">${additionalInfo}: ${dataValues}</li>`;
+      return `<li class="list-group-item ${additionalInfoClass}">${additionalInfo}: ${data.officeNum}</li>`;
     case 'github':
-      return `<li class="list-group-item ${additionalInfoClass}">Github: <a href="https://github.com/${dataValues}" target="_blank" class="card-link">${dataValues}</a></li>`;
+      return `<li class="list-group-item ${additionalInfoClass}">Github: <a href="${data.getGithub()}" target="_blank" class="card-link">${data.github}</a></li>`;
     case 'school':
-      return `<li class="list-group-item ${additionalInfoClass}">School: <a href="https://www.google.com/search?q=${dataValues}" target="_blank" class="card-link">${dataValues}</a></li>`;
+      return `<li class="list-group-item ${additionalInfoClass}">School: <a href="https://www.google.com/search?q=${data.getSchool()}" target="_blank" class="card-link">${data.getSchool()}</a></li>`;
   }
 }
 
@@ -56,6 +60,10 @@ const generateAdditionalField = (additionalInfoClass, additionalInfo, dataValues
 function generateContent(data){
   // destructure page data by section
   const { manager, engineerList, internList } = data;
+
+  console.log("manager");console.log(manager);
+  console.log("engineerList");console.log(engineerList);
+  console.log("internList");console.log(internList);
 
   return `<!DOCTYPE html>
 <html lang="en">
