@@ -3,21 +3,10 @@ function displayEmployeeListInfo(title, data, additionalInfoClass, additionalInf
     <h4>${title}:</h4>
     <br>
 `;
-main += `    <section class="row no-gutters">
+  main += `    <section class="row no-gutters">
 `
   if(data.length != 0){
-    let maxIndex = data.length;
-
-    for(let i = 0; i < maxIndex; i++){
-      let dataValues;
-      if(i < data.length){
-        dataValues = Object.values(data[i]);
-      }
-      console.log("===========");
-      console.log("data");
-      console.log(data[i]);
-      console.log("===========");
-
+    for(let i = 0; i < data.length; i++){
       if(i < data.length){
       main += `
       <div class="col-sm">
