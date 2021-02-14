@@ -1,6 +1,9 @@
 const Role = require('./lib/object/Role');
 const inquirer = require('inquirer');
-const generateMarkdown = require('./lib/generateMarkdown');
+const generateMarkdown = require('./utils/generateMarkdown');
+const writeToFile = require('./utils/file-handlers')
+
+const idSet = new Set();
 
 const promptManagerDetails = (manager, propertyList) => {
   
@@ -52,7 +55,14 @@ const promptDetails = (employeeType, propertyList) => {
         name: propertyName,
         message: "Please enter " + propertyName + ": ",
         validate: input => {
+          
           if(input){
+            if(propertyName == 'id'){
+              if(idSet.has(input)){
+                console.log(" -> id '" + input + "' already exists in system, please enter a unique id!");
+                return false;
+              }
+            }
             return true;
           }
           else{
@@ -64,7 +74,10 @@ const promptDetails = (employeeType, propertyList) => {
     ])
     .then(ans => {
       employeeType[propertyName] = ans[propertyName];
-
+      if(propertyName == 'id'){
+        idSet.add(ans[propertyName]);
+      }
+      
       return promptDetails(employeeType, propertyList);
     })
   }
@@ -141,11 +154,11 @@ function main(){
   .then(markdownData => {
     console.log("Saving file...");
     console.log(markdownData);
-    // return writeToFile('./dist/README.md', markdownData);
+    return writeToFile('./dist/index.html', markdownData);
   })
-  // .then(writeFileResponse => {
-  //   console.log(writeFileResponse.message);
-  // })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse.message);
+  })
   .catch(err => {
     console.log(err);
   });
