@@ -50,10 +50,6 @@ function generateContent(data){
   // destructure page data by section
   const { manager, engineerList, internList } = data;
 
-  console.log("manager");console.log(manager);
-  console.log("engineerList");console.log(engineerList);
-  console.log("internList");console.log(internList);
-
   return `<!DOCTYPE html>
 <html lang="en">
 
